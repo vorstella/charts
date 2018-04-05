@@ -19,13 +19,6 @@ spec:
       labels:
         app: {{ template "docker-registry.name" . }}
         release: {{ .Release.Name }}
-        annotations:
-          sha256/configmap: {{- include (print $.Template.BasePath "/configmap.yaml") . | sha256sum | quote }}
-{{- if .Values.secrets.gcs }}
-{{- if .Values.secrets.gcs.keyfile }}
-          sha256/gcsKeyfile: {{- .Files.Get .Values.secrets.gcs.keyfile | sha256sum | quote }}
-{{- end }}
-{{- end }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -120,7 +113,7 @@ spec:
 {{- end }}
 {{- if .Values.secrets.gcs }}
 {{- if .Values.secrets.gcs.keyfile }}
-            - name: "{{ template "docker-registry.fullname" . }}-gcsKeyfile"
+            - name: "{{ template "docker-registry.fullname" . }}-gcskeyfile"
               mountPath: /var/run/secrets/{{ .Chart.Name }}
               readOnly: true
 {{- end }}
@@ -140,7 +133,7 @@ spec:
 {{- end }}
 {{- if .Values.secrets.gcs }}
 {{- if .Values.secrets.gcs.keyfile }}
-        - name: "{{ template "docker-registry.fullname" . }}-gcsKeyfile"
+        - name: "{{ template "docker-registry.fullname" . }}-gcskeyfile"
           secret:
             secretName: {{ template "docker-registry.fullname" . }}-secret
             items:
